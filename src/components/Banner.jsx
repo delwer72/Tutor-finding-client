@@ -9,16 +9,22 @@ title: "Find Expert Tutors Easily",
 desc: "Book one-on-one sessions with verified tutors anytime, anywhere.",
 img: "https://images.unsplash.com/photo-1523240795612-9a054b0db644",
 },
+// {
+// title: "Learn Smarter, Not Harder",
+// desc: "Choose your subject, schedule time, and start learning instantly.",
+// img: "https://images.unsplash.com/photo-1581091870622-1e7b0c4c0b0b",
+// },
 {
-title: "Learn Smarter, Not Harder",
-desc: "Choose your subject, schedule time, and start learning instantly.",
-img: "https://images.unsplash.com/photo-1581091870622-1e7b0c4c0b0b",
+  title: "Learn Smarter, Not Harder",
+  desc: "Choose your subject, schedule time, and start learning instantly.",
+  img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1400&",
 },
 {
 title: "Achieve Your Academic Goals",
 desc: "Join thousands of students improving their skills with expert guidance.",
 img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
 },
+
 ];
 
 const Banner = () => {
