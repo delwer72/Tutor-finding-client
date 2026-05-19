@@ -1,82 +1,83 @@
+
+
 const Footer = () => {
   return (
-    <footer className="bg-black mt-20 text-gray-400 px-6 md:px-16 py-16">
+    <footer className="bg-gray-900 text-gray-300 mt-20 px-6 md:px-16 py-16">
+
       <div className="max-w-7xl mx-auto">
+
+        {/* Brand */}
         <div className="mb-12">
-          <h1 className="text-6xl md:text-7xl font-bold text-white">
-            Wanderlust
+          <h1 className="text-4xl md:text-5xl font-bold text-white">
+            TUTOR-FINDER
           </h1>
-          <p className="mt-4 max-w-xl">
-            Your gateway to extraordinary travel experiences around the world.
+
+          <p className="mt-3 max-w-xl text-gray-400">
+            A smart tutor booking platform that helps students connect with
+            expert tutors, schedule sessions, and learn efficiently without conflicts.
           </p>
         </div>
 
-        {/* Grid Section */}
+        {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Newsletter */}
-          <div>
-            <h3 className="text-white mb-3 tracking-wide">NEWSLETTER</h3>
-            <p className="mb-4 text-sm">
-              Subscribe for exclusive travel deals and inspiration.
-            </p>
 
-            <div className="flex items-center bg-gray-800 px-4 py-3">
-              <input
-                type="email"
-                placeholder="Enter email"
-                className="bg-transparent outline-none flex-1 text-sm"
-              />
-              <span className="text-white text-lg">↗</span>
-            </div>
+          {/* Services */}
+          <div>
+            <h3 className="text-white mb-4 font-semibold">SERVICES</h3>
+            <ul className="space-y-2 text-sm">
+              <li>Find Tutors</li>
+              <li>Book Sessions</li>
+              <li>Online Learning</li>
+              <li>Skill Development</li>
+            </ul>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white mb-3 tracking-wide">QUICK LINKS</h3>
-            <ul className="space-y-2">
-              <li className="hover:text-white cursor-pointer">Home</li>
-              <li className="hover:text-white cursor-pointer">Destinations</li>
-              <li className="hover:text-white cursor-pointer">My Bookings</li>
-              <li className="hover:text-white cursor-pointer">My Profile</li>
+            <h3 className="text-white mb-4 font-semibold">QUICK LINKS</h3>
+            <ul className="space-y-2 text-sm">
+              <li>Home</li>
+              <li>Tutors</li>
+              <li>My Bookings</li>
+              <li>Profile</li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
-            <h3 className="text-white mb-3 tracking-wide">SUPPORT</h3>
-            <ul className="space-y-2">
-              <li className="hover:text-white cursor-pointer">Help Center</li>
-              <li className="hover:text-white cursor-pointer">
-                Terms of Service
-              </li>
-              <li className="hover:text-white cursor-pointer">
-                Privacy Policy
-              </li>
+            <h3 className="text-white mb-4 font-semibold">SUPPORT</h3>
+            <ul className="space-y-2 text-sm">
+              <li>Help Center</li>
+              <li>Privacy Policy</li>
+              <li>Terms & Conditions</li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h3 className="text-white mb-3 tracking-wide">CONTACT US</h3>
-            <ul className="space-y-2">
-              <li>786 901 1622</li>
-              <li>info@wandarland.com</li>
+            <h3 className="text-white mb-4 font-semibold">CONTACT</h3>
+            <ul className="space-y-2 text-sm">
+              <li>📞 +880 12340000</li>
+              <li>📧 support@mediqueue.com</li>
+              <li>📍 Dhaka, Bangladesh</li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="border-t border-gray-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm">
-            © 2026 Wanderlust. All rights reserved.
+        {/* Bottom */}
+        <div className="border-t border-gray-700 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+
+          <p className="text-sm text-gray-400">
+            © 2026 Tutor Finder. All rights reserved.
           </p>
 
           <div className="flex gap-5 mt-4 md:mt-0 text-white text-lg">
-            <span className="cursor-pointer">X</span>
-            <span className="cursor-pointer">in</span>
-            <span className="cursor-pointer">◎</span>
+            <span className="cursor-pointer hover:text-blue-400">X</span>
+            <span className="cursor-pointer hover:text-blue-400">in</span>
+            <span className="cursor-pointer hover:text-blue-400">f</span>
           </div>
         </div>
+
       </div>
     </footer>
   );
