@@ -1,24 +1,24 @@
-import TutorCard from "@/components/TutorCard.jsx";
+// import TutorCard from "@/components/TutorCard.jsx";
 
-const DestinationPage = async () => {
-    const res = await fetch('http://localhost:5000/destination')
-    const tutors = await res.json() 
-
-
-    return (
-        <div className="max-w-7xl mx-auto">
-            <h1>All Tutors</h1>
+// const DestinationPage = async () => {
+//     const res = await fetch('http://localhost:5000/destination')
+//     const tutors = await res.json() 
 
 
-            <div className="grid grid-cols-4 gap-5">
-                {
-                    tutors.map(tutor => <TutorCard key={tutor._id} tutor={tutor}/>)
-                }
+//     return (
+//         <div className="max-w-7xl mx-auto">
+//             <h1>All Tutors</h1>
 
-            </div>
 
-        </div>
-    );
-};
+//             <div className="grid grid-cols-4 gap-5">
+//                 {
+//                     tutors.map(tutor => <TutorCard key={tutor._id} tutor={tutor}/>)
+//                 }
 
-export default DestinationPage;
+//             </div>
+
+//         </div>
+//     );
+// };
+
+// export default DestinationPage;
