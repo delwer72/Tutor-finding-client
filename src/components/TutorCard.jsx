@@ -91,7 +91,7 @@ const TutorCard = ({ tutor }) => {
             className="mt-3 text-cyan-500"
           >
             <FiExternalLink />
-            Book Now
+            See Details
           </Button>
         </Link>
       </div>
