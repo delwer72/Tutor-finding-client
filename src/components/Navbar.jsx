@@ -63,7 +63,7 @@ const Navbar = () => {
         </li>
 
         <li>
-          <Link className={navLink("/alltutors")} href="/tutors">
+          <Link className={navLink("/all-tutors")} href="/all-tutors">
             All Tutors
           </Link>
         </li>
@@ -152,11 +152,13 @@ const Navbar = () => {
         </Button>
       </Link>
 
-      <Link href="/signup">
+         <Link href="/signup">
         <Button className="bg-cyan-500 text-white">
           Register
         </Button>
       </Link>
+
+     
 
     </div>
 

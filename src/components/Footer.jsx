@@ -9,7 +9,7 @@ const Footer = () => {
         {/* Brand */}
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white">
-            TUTOR-FINDER
+            MEDIQUEUE
           </h1>
 
           <p className="mt-3 max-w-xl text-gray-400">

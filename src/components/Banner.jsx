@@ -9,11 +9,7 @@ title: "Find Expert Tutors Easily",
 desc: "Book one-on-one sessions with verified tutors anytime, anywhere.",
 img: "https://images.unsplash.com/photo-1523240795612-9a054b0db644",
 },
-// {
-// title: "Learn Smarter, Not Harder",
-// desc: "Choose your subject, schedule time, and start learning instantly.",
-// img: "https://images.unsplash.com/photo-1581091870622-1e7b0c4c0b0b",
-// },
+
 {
   title: "Learn Smarter, Not Harder",
   desc: "Choose your subject, schedule time, and start learning instantly.",
@@ -65,6 +61,12 @@ className="w-full h-full object-cover"
 <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition">
 Explore Tutors
 </button>
+
+  {/* <Link href="/alltutors">
+        <Button className="bg-cyan-500 text-white">
+          Explore tutors
+        </Button>
+      </Link> */}
 </div>
 </div>
 </div>
