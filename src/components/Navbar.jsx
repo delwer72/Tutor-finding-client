@@ -197,7 +197,7 @@ const Navbar = () => {
 
         <li>
           <Link className={navLink("/tutors")} href="/tutors">
-            Tutors
+            All Tutors
           </Link>
         </li>
 

@@ -1,18 +1,18 @@
-import DestinationCard from "@/components/DestinationCard";
+import TutorCard from "@/components/TutorCard.jsx";
 
 const DestinationPage = async () => {
     const res = await fetch('http://localhost:5000/destination')
-    const destinations = await res.json() 
+    const tutors = await res.json() 
 
 
     return (
         <div className="max-w-7xl mx-auto">
-            <h1>All destinations</h1>
+            <h1>All Tutors</h1>
 
 
             <div className="grid grid-cols-4 gap-5">
                 {
-                    destinations.map(destination => <DestinationCard key={destination._id} destination={destination}/>)
+                    tutors.map(tutor => <TutorCard key={tutor._id} tutor={tutor}/>)
                 }
 
             </div>
