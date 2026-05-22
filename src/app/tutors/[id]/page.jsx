@@ -1,147 +1,282 @@
-// import BookingCard from "@/components/BookingCard";
-// import { DeleteAlert } from "@/components/DeleteAlert";
-// import { EditModal } from "@/components/EditModal";
-// import { Button } from "@heroui/react";
-// import Image from "next/image";
-// import { BiEdit } from "react-icons/bi";
-// import { FaRegCalendar } from "react-icons/fa6";
-// import { LuMapPin } from "react-icons/lu";
+"use client";
 
-// const DestinationDetailsPage = async ({ params }) => {
-//   const { id } = await params;
-
-//   const res = await fetch(`http://localhost:5000/destination/${id}`);
-//   const destination = await res.json();
-
-//   const { imageUrl, price, destinationName, duration, country, description } =
-//     destination;
-
-//   return (
-//     <div className="max-w-7xl mx-auto">
-//       <div className="flex  items-center gap-3 justify-end mt-5 mb-3">
-//         <EditModal destination={destination} />
-//         <DeleteAlert destination={destination}/>
-//       </div>
-//       <Image
-//         className="w-full h-100 object-cover"
-//         alt={destinationName}
-//         src={imageUrl}
-//         height={500}
-//         width={800}
-//       />
-
-//      <div className="flex justify-between">
-//        <div className="p-2">
-//         <div className="flex items-center gap-1">
-//           <LuMapPin /> <span>{country}</span>
-//         </div>
-//         <div className="flex justify-between">
-//           <div>
-//             <div>
-//               <h2 className="text-xl font-bold">{destinationName}</h2>
-//             </div>
-//             <div className="flex gap-1 items-center">
-//               <FaRegCalendar /> {duration}
-//             </div>
-//           </div>
-//         </div>
-
-//         <h1 className="mt-10 text-2xl font-bold">Overview</h1>
-
-//         <p>{description}</p>
-//       </div>
-
-
-//       <BookingCard destination={destination}/>
-//      </div>
-
-
-//     </div>
-//   );
-// };
-
-// export default DestinationDetailsPage;
-
-import BookingCard from "@/components/BookingCard";
-import { DeleteAlert } from "@/components/DeleteAlert";
-import { EditModal } from "@/components/EditModal";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import Image from "next/image";
-import { FaRegCalendar } from "react-icons/fa6";
-import { LuMapPin } from "react-icons/lu";
+import toast from "react-hot-toast";
 
-const DestinationDetailsPage = async ({ params }) => {
-  const { id } = await params;
+import {
+  LuMapPin,
+} from "react-icons/lu";
+import {
+  FaRegCalendar
+} from "react-icons/fa6";
+import {
+  MdOutlineAccessTime
+} from "react-icons/md";
+import {
+  PiBookOpenTextLight
+} from "react-icons/pi";
+import {
+  HiOutlineAcademicCap
+} from "react-icons/hi2";
 
-  const res = await fetch(
-    `http://localhost:5000/destination/${id}`,
-    {
-      cache: "no-store",
+const TutorDetailsPage = () => {
+  const { id } = useParams();
+
+  const [tutor, setTutor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    date: "",
+    time: "",
+  });
+
+  useEffect(() => {
+    const fetchTutor = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/destination/${id}`);
+        const data = await res.json();
+        setTutor(data);
+      } catch (err) {
+        console.log(err);
+        toast.error("Failed to load tutor");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchTutor();
+  }, [id]);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleBooking = (e) => {
+    e.preventDefault();
+
+    if (!formData.date || !formData.time) {
+      toast.error("Please fill all required fields");
+      return;
     }
-  );
 
-  const destination = await res.json();
+    toast.success("Booking request sent 🎉");
+    setModalOpen(false);
+
+    setFormData({
+      name: "",
+      email: "",
+      date: "",
+      time: "",
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!tutor) return null;
 
   const {
-    imageUrl,
-    destinationName,
-    duration,
-    country,
+    tutorName,
+    photoURL,
+    subject,
+    availableDays,
+    availableTime,
+    hourlyFee,
+    totalSlot,
+    sessionStartDate,
+    institution,
+    experience,
+    location,
+    teachingMode,
     description,
-  } = destination;
+  } = tutor;
+
+  const safeImage =
+    photoURL?.trim()
+      ? photoURL
+      : "https://via.placeholder.com/800x600.png?text=No+Image";
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
-      
-      {/* Top Buttons */}
-      <div className="flex items-center gap-3 justify-end mt-5 mb-3">
-        <EditModal destination={destination} />
-        <DeleteAlert destination={destination} />
-      </div>
+    <div className="bg-zinc-50 min-h-screen py-12">
+      <div className="max-w-5xl mx-auto px-4">
 
-      {/* Image */}
-      <Image
-        className="w-full h-[500px] object-cover rounded-xl"
-        alt={destinationName}
-        src={imageUrl}
-        height={500}
-        width={1200}
-      />
+        {/* BACK STYLE */}
+        <button
+          onClick={() => history.back()}
+          className="mb-6 text-sm font-semibold text-zinc-500 hover:text-amber-500"
+        >
+          ← Back
+        </button>
 
-      {/* Content */}
-      <div className="flex flex-col lg:flex-row justify-between gap-10 mt-8">
-        
-        {/* Left Side */}
-        <div className="flex-1">
-          <div className="flex items-center gap-2 text-gray-600">
-            <LuMapPin />
-            <span>{country}</span>
+        {/* MAIN CARD */}
+        <div className="grid lg:grid-cols-2 gap-10 bg-white rounded-3xl border shadow-sm overflow-hidden">
+
+          {/* IMAGE */}
+          <div className="relative h-[480px]">
+            <Image
+              src={safeImage}
+              alt={tutorName}
+              fill
+              className="object-cover"
+            />
           </div>
 
-          <h1 className="text-3xl font-bold mt-3">
-            {destinationName}
-          </h1>
+          {/* INFO */}
+          <div className="p-8 space-y-5">
 
-          <div className="flex items-center gap-2 mt-2 text-gray-600">
-            <FaRegCalendar />
-            <span>{duration}</span>
+            <div>
+              <span className="text-xs bg-amber-100 text-amber-600 px-3 py-1 rounded-full">
+                {subject}
+              </span>
+
+              <h1 className="text-3xl font-bold mt-3">
+                {tutorName}
+              </h1>
+
+              <p className="text-sm text-zinc-500 mt-1">
+                {institution}
+              </p>
+            </div>
+
+            <div className="space-y-2 text-sm text-zinc-600">
+
+              <div className="flex gap-2 items-center">
+                <LuMapPin /> {location}
+              </div>
+
+              <div className="flex gap-2 items-center">
+                <FaRegCalendar /> {experience} Experience
+              </div>
+
+              <div className="flex gap-2 items-center">
+                <PiBookOpenTextLight /> {teachingMode}
+              </div>
+
+              <div className="flex gap-2 items-center">
+                <MdOutlineAccessTime /> {availableTime}
+              </div>
+
+              <div className="flex gap-2 items-center">
+                <HiOutlineAcademicCap /> {availableDays}
+              </div>
+            </div>
+
+            <h2 className="text-3xl font-bold text-amber-500">
+              ৳ {hourlyFee}/hr
+            </h2>
+
+            <div className="text-sm text-zinc-600 space-y-1">
+              <p><b>Session Start:</b> {sessionStartDate}</p>
+              <p><b>Total Slots:</b> {totalSlot}</p>
+            </div>
+
+            <button
+              onClick={() => setModalOpen(true)}
+              className="w-full py-3 bg-amber-500 text-white rounded-xl font-semibold hover:bg-amber-600"
+            >
+              Book Now
+            </button>
           </div>
+        </div>
 
-          <h2 className="mt-10 text-2xl font-bold">
-            Overview
-          </h2>
-
-          <p className="mt-4 text-gray-700 leading-7">
+        {/* DESCRIPTION */}
+        <div className="mt-10 bg-white p-6 rounded-2xl border">
+          <h2 className="text-xl font-bold mb-2">About Tutor</h2>
+          <p className="text-sm text-zinc-600 leading-6">
             {description}
           </p>
         </div>
-
-        {/* Right Side */}
-        <div className="w-full lg:w-[400px]">
-          <BookingCard destination={destination} />
-        </div>
       </div>
+
+      {/* MODAL (PetDetails style) */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+
+          <div className="bg-white w-full max-w-lg rounded-2xl overflow-hidden">
+
+            {/* HEADER */}
+            <div className="bg-zinc-900 text-white p-5 flex justify-between">
+              <h3 className="font-bold">Book {tutorName}</h3>
+              <button onClick={() => setModalOpen(false)}>✕</button>
+            </div>
+
+            {/* FORM */}
+            <form onSubmit={handleBooking} className="p-5 space-y-4">
+
+              <input
+                type="text"
+                name="name"
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full border p-3 rounded-lg text-sm"
+              />
+
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full border p-3 rounded-lg text-sm"
+              />
+
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="w-full border p-3 rounded-lg text-sm"
+              />
+
+              <input
+                type="text"
+                name="time"
+                placeholder="Preferred Time"
+                value={formData.time}
+                onChange={handleChange}
+                className="w-full border p-3 rounded-lg text-sm"
+              />
+
+              <div className="flex justify-end gap-3 pt-3">
+
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="px-4 py-2 text-sm bg-gray-100 rounded-lg"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="px-5 py-2 text-sm bg-amber-500 text-white rounded-lg"
+                >
+                  Confirm
+                </button>
+
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default DestinationDetailsPage;
+export default TutorDetailsPage;

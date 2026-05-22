@@ -10,7 +10,7 @@ const AllTutorPage = async () => {
             <h1>All Tutors</h1>
 
 
-            <div className="grid grid-cols-4 gap-5">
+            <div className="grid grid-cols-3 gap-5">
                 {
                     tutors.map(tutor => <TutorCard key={tutor._id} tutor={tutor}/>)
                 }
