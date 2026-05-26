@@ -1,96 +1,215 @@
+
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-import {
-  LuMapPin,
-} from "react-icons/lu";
-import {
-  FaRegCalendar
-} from "react-icons/fa6";
-import {
-  MdOutlineAccessTime
-} from "react-icons/md";
-import {
-  PiBookOpenTextLight
-} from "react-icons/pi";
-import {
-  HiOutlineAcademicCap
-} from "react-icons/hi2";
+import { LuMapPin } from "react-icons/lu";
+import { FaRegCalendar } from "react-icons/fa6";
+import { MdOutlineAccessTime } from "react-icons/md";
+import { PiBookOpenTextLight } from "react-icons/pi";
+import { HiOutlineAcademicCap } from "react-icons/hi2";
 
 const TutorDetailsPage = () => {
+
   const { id } = useParams();
 
+  const { data: session } = authClient.useSession();
+
+  const user = session?.user;
+
   const [tutor, setTutor] = useState(null);
+
   const [loading, setLoading] = useState(true);
+
   const [modalOpen, setModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    studentName: "",
+    studentEmail: "",
     date: "",
     time: "",
   });
 
+  // =========================================
+  // FETCH SINGLE TUTOR
+  // =========================================
+
   useEffect(() => {
+
     const fetchTutor = async () => {
+
       try {
-        const res = await fetch(`http://localhost:5000/destination/${id}`);
+
+        const res = await fetch(
+          `http://localhost:5000/tutors/${id}`
+        );
+
         const data = await res.json();
+
         setTutor(data);
-      } catch (err) {
-        console.log(err);
+
+      } catch (error) {
+
+        console.log(error);
+
         toast.error("Failed to load tutor");
+
       } finally {
+
         setLoading(false);
+
       }
     };
 
-    if (id) fetchTutor();
+    if (id) {
+      fetchTutor();
+    }
+
   }, [id]);
 
+  // =========================================
+  // INPUT CHANGE
+  // =========================================
+
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleBooking = (e) => {
-    e.preventDefault();
+  // =========================================
+  // OPEN MODAL
+  // =========================================
 
-    if (!formData.date || !formData.time) {
-      toast.error("Please fill all required fields");
+  const openBookingModal = () => {
+
+    if (!user) {
+
+      toast.error("Please login first");
+
       return;
     }
 
-    toast.success("Booking request sent 🎉");
-    setModalOpen(false);
+    setModalOpen(true);
 
     setFormData({
-      name: "",
-      email: "",
+      studentName: user?.name || "",
+      studentEmail: user?.email || "",
       date: "",
       time: "",
     });
   };
 
+  // =========================================
+  // BOOKING SUBMIT
+  // =========================================
+
+  const handleBooking = async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+      const bookingData = {
+
+        tutorId: tutor?._id,
+
+        tutorName: tutor?.tutorName,
+
+        studentName: formData.studentName,
+
+        studentEmail: formData.studentEmail,
+
+        date: formData.date,
+
+        time: formData.time,
+
+      };
+
+      console.log("Booking Data:", bookingData);
+
+      const res = await fetch(
+        "http://localhost:5000/bookings",
+        {
+          method: "POST",
+
+          headers: {
+            "content-type": "application/json",
+          },
+
+          body: JSON.stringify(bookingData),
+        }
+      );
+
+      const data = await res.json();
+
+      console.log(data);
+
+      // SUCCESS
+      if (data.success) {
+
+        toast.success("Booking Successful 🎉");
+
+        setModalOpen(false);
+
+        // RESET FORM
+        setFormData({
+          studentName: user?.name || "",
+          studentEmail: user?.email || "",
+          date: "",
+          time: "",
+        });
+
+      } else {
+
+        toast.error(data.error || "Booking Failed");
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      toast.error("Something went wrong");
+
+    }
+  };
+
+  // =========================================
+  // LOADING
+  // =========================================
+
   if (loading) {
+
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="min-h-screen flex items-center justify-center text-3xl font-bold">
         Loading...
       </div>
     );
   }
 
-  if (!tutor) return null;
+  if (!tutor) {
+
+    return (
+      <div className="min-h-screen flex items-center justify-center text-3xl font-bold">
+        Tutor Not Found
+      </div>
+    );
+  }
+
+  // =========================================
+  // TUTOR DATA
+  // =========================================
 
   const {
     tutorName,
-    photoURL,
+    image,
     subject,
     availableDays,
     availableTime,
@@ -101,171 +220,240 @@ const TutorDetailsPage = () => {
     experience,
     location,
     teachingMode,
-    description,
   } = tutor;
 
   const safeImage =
-    photoURL?.trim()
-      ? photoURL
-      : "https://via.placeholder.com/800x600.png?text=No+Image";
+    image && image.startsWith("http")
+      ? image
+      : "https://i.ibb.co/4pDNDk1/avatar.png";
 
   return (
-    <div className="bg-zinc-50 min-h-screen py-12">
-      <div className="max-w-5xl mx-auto px-4">
 
-        {/* BACK STYLE */}
-        <button
-          onClick={() => history.back()}
-          className="mb-6 text-sm font-semibold text-zinc-500 hover:text-amber-500"
-        >
-          ← Back
-        </button>
+    <div className="bg-gray-50 min-h-screen py-10">
+
+      <div className="max-w-6xl mx-auto px-5">
 
         {/* MAIN CARD */}
-        <div className="grid lg:grid-cols-2 gap-10 bg-white rounded-3xl border shadow-sm overflow-hidden">
+
+        <div className="grid lg:grid-cols-3 gap-10 bg-white rounded-3xl overflow-hidden shadow-lg border">
 
           {/* IMAGE */}
-          <div className="relative h-[480px]">
+
+          <div className="relative h-[500px]">
+
             <Image
               src={safeImage}
               alt={tutorName}
               fill
               className="object-cover"
             />
+
           </div>
 
-          {/* INFO */}
+          {/* CONTENT */}
+
           <div className="p-8 space-y-5">
 
             <div>
-              <span className="text-xs bg-amber-100 text-amber-600 px-3 py-1 rounded-full">
+
+              <span className="bg-cyan-100 text-cyan-600 px-4 py-1 rounded-full text-sm font-medium">
                 {subject}
               </span>
 
-              <h1 className="text-3xl font-bold mt-3">
+              <h1 className="text-4xl font-bold mt-4">
                 {tutorName}
               </h1>
 
-              <p className="text-sm text-zinc-500 mt-1">
+              <p className="text-gray-500 mt-2">
                 {institution}
               </p>
+
             </div>
 
-            <div className="space-y-2 text-sm text-zinc-600">
+            <div className="space-y-3 text-gray-600">
 
-              <div className="flex gap-2 items-center">
-                <LuMapPin /> {location}
+              <div className="flex items-center gap-2">
+                <LuMapPin />
+                {location}
               </div>
 
-              <div className="flex gap-2 items-center">
-                <FaRegCalendar /> {experience} Experience
+              <div className="flex items-center gap-2">
+                <FaRegCalendar />
+                {experience}
               </div>
 
-              <div className="flex gap-2 items-center">
-                <PiBookOpenTextLight /> {teachingMode}
+              <div className="flex items-center gap-2">
+                <MdOutlineAccessTime />
+                {availableTime}
               </div>
 
-              <div className="flex gap-2 items-center">
-                <MdOutlineAccessTime /> {availableTime}
+              <div className="flex items-center gap-2">
+                <HiOutlineAcademicCap />
+                {availableDays}
               </div>
 
-              <div className="flex gap-2 items-center">
-                <HiOutlineAcademicCap /> {availableDays}
+              <div className="flex items-center gap-2">
+                <PiBookOpenTextLight />
+                {teachingMode}
               </div>
+
             </div>
 
-            <h2 className="text-3xl font-bold text-amber-500">
-              ৳ {hourlyFee}/hr
-            </h2>
+            <div className="pt-4 border-t">
 
-            <div className="text-sm text-zinc-600 space-y-1">
-              <p><b>Session Start:</b> {sessionStartDate}</p>
-              <p><b>Total Slots:</b> {totalSlot}</p>
+              <h2 className="text-3xl font-bold text-cyan-600">
+                ৳ {hourlyFee}/hr
+              </h2>
+
+              <p className="mt-2 text-gray-600">
+                Total Slots: {totalSlot}
+              </p>
+
+              <p className="text-gray-600">
+                Session Start: {sessionStartDate}
+              </p>
+
             </div>
 
             <button
-              onClick={() => setModalOpen(true)}
-              className="w-full py-3 bg-amber-500 text-white rounded-xl font-semibold hover:bg-amber-600"
+              onClick={openBookingModal}
+              className="w-full py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-semibold transition"
             >
               Book Now
             </button>
+
           </div>
+
         </div>
 
-        {/* DESCRIPTION */}
-        <div className="mt-10 bg-white p-6 rounded-2xl border">
-          <h2 className="text-xl font-bold mb-2">About Tutor</h2>
-          <p className="text-sm text-zinc-600 leading-6">
-            {description}
-          </p>
-        </div>
       </div>
 
-      {/* MODAL (PetDetails style) */}
+      {/* =========================================
+          BOOKING MODAL
+      ========================================= */}
+
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-5">
 
           <div className="bg-white w-full max-w-lg rounded-2xl overflow-hidden">
 
             {/* HEADER */}
-            <div className="bg-zinc-900 text-white p-5 flex justify-between">
-              <h3 className="font-bold">Book {tutorName}</h3>
-              <button onClick={() => setModalOpen(false)}>✕</button>
+
+            <div className="bg-cyan-500 text-white p-5 flex items-center justify-between">
+
+              <h2 className="text-xl font-bold">
+                Book Session
+              </h2>
+
+              <button
+                onClick={() => setModalOpen(false)}
+                className="text-2xl"
+              >
+                ✕
+              </button>
+
             </div>
 
             {/* FORM */}
-            <form onSubmit={handleBooking} className="p-5 space-y-4">
 
-              <input
-                type="text"
-                name="name"
-                placeholder="Your Name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full border p-3 rounded-lg text-sm"
-              />
+            <form
+              onSubmit={handleBooking}
+              className="p-6 space-y-5"
+            >
 
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full border p-3 rounded-lg text-sm"
-              />
+              {/* STUDENT NAME */}
 
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                className="w-full border p-3 rounded-lg text-sm"
-              />
+              <div>
 
-              <input
-                type="text"
-                name="time"
-                placeholder="Preferred Time"
-                value={formData.time}
-                onChange={handleChange}
-                className="w-full border p-3 rounded-lg text-sm"
-              />
+                <label className="block mb-2 font-medium">
+                  Student Name
+                </label>
+
+                <input
+                  type="text"
+                  name="studentName"
+                  value={formData.studentName}
+                  readOnly
+                  className="w-full border p-3 rounded-lg bg-gray-100"
+                />
+
+              </div>
+
+              {/* EMAIL */}
+
+              <div>
+
+                <label className="block mb-2 font-medium">
+                  Student Email
+                </label>
+
+                <input
+                  type="email"
+                  name="studentEmail"
+                  value={formData.studentEmail}
+                  readOnly
+                  className="w-full border p-3 rounded-lg bg-gray-100"
+                />
+
+              </div>
+
+              {/* DATE */}
+
+              <div>
+
+                <label className="block mb-2 font-medium">
+                  Session Date
+                </label>
+
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  className="w-full border p-3 rounded-lg"
+                  required
+                />
+
+              </div>
+
+              {/* TIME */}
+
+              <div>
+
+                <label className="block mb-2 font-medium">
+                  Preferred Time
+                </label>
+
+                <input
+                  type="text"
+                  name="time"
+                  placeholder="Example: 7 PM"
+                  value={formData.time}
+                  onChange={handleChange}
+                  className="w-full border p-3 rounded-lg"
+                  required
+                />
+
+              </div>
+
+              {/* BUTTONS */}
 
               <div className="flex justify-end gap-3 pt-3">
 
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 text-sm bg-gray-100 rounded-lg"
+                  className="px-5 py-2 rounded-lg bg-gray-200"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="px-5 py-2 text-sm bg-amber-500 text-white rounded-lg"
+                  className="px-5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white"
                 >
-                  Confirm
+                  Confirm Booking
                 </button>
 
               </div>
@@ -273,8 +461,10 @@ const TutorDetailsPage = () => {
             </form>
 
           </div>
+
         </div>
       )}
+
     </div>
   );
 };

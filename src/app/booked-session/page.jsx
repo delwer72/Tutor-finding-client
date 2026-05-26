@@ -1,111 +1,305 @@
 "use client";
 
-import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import {
-  Input,
-  Label,
-  TextField,
-  Button,
-  Card,
-} from "@heroui/react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-const BookingForm = ({ destination }) => {
-  const { data: session } = authClient.useSession();
+const MyBookedSessionsPage = () => {
 
-  const [loading, setLoading] = useState(false);
+  const { data: session, isPending } =
+    authClient.useSession();
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const user = session?.user;
 
-    const formData = new FormData(e.currentTarget);
+  const [bookings, setBookings] = useState([]);
 
-    const booking = {
-      studentName: formData.get("studentName"),
-      phone: formData.get("phone"),
+  const [loading, setLoading] = useState(true);
 
-      // auto fields
-      tutorName: tutor?.tutorName,
-      email: session?.user?.email,
+  // =========================================
+  // GET USER BOOKINGS
+  // =========================================
 
-      tutorId: tutor?._id,
-      studentId: session?.user?.id,
+  useEffect(() => {
+
+    // session loading
+    if (isPending) return;
+
+    // no user
+    if (!user?.email) {
+
+      setLoading(false);
+
+      return;
+    }
+
+    const fetchBookings = async () => {
+
+      try {
+
+        const res = await fetch(
+          `http://localhost:5000/bookings/${user.email}`
+        );
+
+        const data = await res.json();
+
+        setBookings(data);
+
+      } catch (error) {
+
+        console.log(error);
+
+        toast.error("Failed To Load Bookings");
+
+      } finally {
+
+        setLoading(false);
+      }
     };
 
+    fetchBookings();
+
+  }, [user, isPending]);
+
+  // =========================================
+  // CANCEL BOOKING
+  // =========================================
+
+  const handleCancelBooking = async (id) => {
+
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this booking?"
+    );
+
+    if (!confirmCancel) return;
+
     try {
-      // 1️⃣ Create booking
-      const res = await fetch("http://localhost:5000/bookings", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(booking),
-      });
+
+      const res = await fetch(
+        `http://localhost:5000/bookings/${id}`,
+        {
+          method: "PATCH",
+
+          headers: {
+            "content-type": "application/json",
+          },
+
+          body: JSON.stringify({
+            status: "cancelled",
+          }),
+        }
+      );
 
       const data = await res.json();
 
-      // 2️⃣ Update tutor slot + status
-      await fetch(`http://localhost:5000/destinations/${destination._id}`, {
-        method: "PATCH",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          totalSlot: Number(tutor.totalSlot) - 1,
-          status: Number(tutor.totalSlot) - 1 === 0 ? "booked" : "available",
-        }),
-      });
+      if (data.modifiedCount > 0) {
 
-      alert("Booking Successful!");
+        toast.success("Booking Cancelled");
+
+        // UPDATE UI
+        const updatedBookings = bookings.map(
+          (booking) => {
+
+            if (booking._id === id) {
+
+              return {
+                ...booking,
+                status: "cancelled",
+              };
+            }
+
+            return booking;
+          }
+        );
+
+        setBookings(updatedBookings);
+      }
+
     } catch (error) {
+
       console.log(error);
-      alert("Booking failed!");
-    } finally {
-      setLoading(false);
+
+      toast.error("Failed To Cancel Booking");
     }
   };
 
+  // =========================================
+  // LOADING STATE
+  // =========================================
+
+  if (loading || isPending) {
+
+    return (
+      <div className="min-h-screen flex items-center justify-center text-3xl font-bold">
+
+        Loading...
+
+      </div>
+    );
+  }
+
+  // =========================================
+  // EMPTY STATE
+  // =========================================
+
+  if (bookings.length === 0) {
+
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-center">
+
+        <h1 className="text-4xl font-bold mb-4">
+
+          No Booked Sessions Found
+
+        </h1>
+
+        <p className="text-gray-500">
+
+          You have not booked any tutor yet.
+
+        </p>
+
+      </div>
+    );
+  }
+
+  // =========================================
+  // MAIN UI
+  // =========================================
+
   return (
-    <Card className="p-6">
-      <form onSubmit={onSubmit} className="space-y-5">
+    <div className="max-w-7xl mx-auto px-5 py-10">
 
-        {/* Student Name */}
-        <TextField name="studentName" isRequired>
-          <Label>Student Name</Label>
-          <Input placeholder="Enter your name" />
-        </TextField>
+      {/* HEADING */}
 
-        {/* Phone */}
-        <TextField name="phone" isRequired>
-          <Label>Phone</Label>
-          <Input placeholder="01XXXXXXXXX" />
-        </TextField>
+      <div className="mb-10 text-center">
 
-        {/* Auto Tutor Name */}
-        <div>
-          <Label>Tutor Name</Label>
-          <Input value={tutor?.tutorName} disabled />
-        </div>
+        <h1 className="text-4xl font-bold">
 
-        {/* Auto Email */}
-        <div>
-          <Label>Email</Label>
-          <Input value={session?.user?.email} disabled />
-        </div>
+          My Booked Sessions
 
-        {/* Submit */}
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-green-500 text-white"
-        >
-          {loading ? "Booking..." : "Confirm Booking"}
-        </Button>
+        </h1>
 
-      </form>
-    </Card>
+        <p className="text-gray-500 mt-3">
+
+          Manage your booked tutor sessions
+
+        </p>
+
+      </div>
+
+      {/* TABLE */}
+
+      <div className="overflow-x-auto border rounded-2xl shadow-sm">
+
+        <table className="table w-full">
+
+          {/* TABLE HEAD */}
+
+          <thead className="bg-cyan-500 text-white">
+
+            <tr>
+
+              <th>No</th>
+
+              <th>Tutor Name</th>
+
+              <th>Student Name</th>
+
+              <th>Email</th>
+
+              <th>Status</th>
+
+              <th>Action</th>
+
+            </tr>
+
+          </thead>
+
+          {/* TABLE BODY */}
+
+          <tbody>
+
+            {bookings.map((booking, index) => (
+
+              <tr
+                key={booking._id}
+                className="hover:bg-gray-50"
+              >
+
+                <td>
+                  {index + 1}
+                </td>
+
+                <td className="font-semibold">
+                  {booking.tutorName}
+                </td>
+
+                <td>
+                  {booking.studentName}
+                </td>
+
+                <td>
+                  {booking.studentEmail}
+                </td>
+
+                {/* STATUS */}
+
+                <td>
+
+                  <span
+                    className={`px-4 py-2 rounded-full text-sm font-semibold
+                      
+                      ${
+                        booking.status === "cancelled"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-green-100 text-green-600"
+                      }
+                    `}
+                  >
+
+                    {booking.status}
+
+                  </span>
+
+                </td>
+
+                {/* ACTION */}
+
+                <td>
+
+                  <button
+                    disabled={
+                      booking.status === "cancelled"
+                    }
+                    onClick={() =>
+                      handleCancelBooking(
+                        booking._id
+                      )
+                    }
+                    className={`px-4 py-2 rounded-lg text-white transition
+                      
+                      ${
+                        booking.status === "cancelled"
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-red-500 hover:bg-red-600"
+                      }
+                    `}
+                  >
+
+                    Cancel
+
+                  </button>
+
+                </td>
+
+              </tr>
+            ))}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 };
 
-export default BookingForm;
+export default MyBookedSessionsPage;

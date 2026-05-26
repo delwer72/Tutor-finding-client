@@ -1,42 +1,26 @@
-// /** @type {import('next').NextConfig} */
 // const nextConfig = {
-//   reactCompiler: true,
 //   images: {
 //     remotePatterns: [
 //       {
 //         protocol: "https",
-//         hostname: "i.ibb.co",
-//         pathname: "/**",
+//         hostname: "via.placeholder.com",
 //       },
 //       {
 //         protocol: "https",
-//         hostname: "img.sanishtech.com",
-//         pathname: "/**",
+//         hostname: "i.ibb.co",
 //       },
 //     ],
 //   },
 // };
 
 // export default nextConfig;
-/** @type {import('next').NextConfig} */
+
 const nextConfig = {
-  reactCompiler: true,
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "i.ibb.co",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "img.sanishtech.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        pathname: "/**",
+        hostname: "**",
       },
     ],
   },

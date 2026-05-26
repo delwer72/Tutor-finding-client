@@ -26,7 +26,7 @@
 import TutorCard from "@/components/TutorCard.jsx";
 
 const AllTutorPage = async () => {
-  const res = await fetch("http://localhost:5000/destination");
+  const res = await fetch("http://localhost:5000/tutors");
   const tutors = await res.json();
 
   // শুধু প্রথম ৬টা data
