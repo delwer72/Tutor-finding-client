@@ -12,7 +12,7 @@ const TutorCard = ({ tutor }) => {
   const {
     _id,
     tutorName,
-    photoURL,
+    image ,
     subject,
     availableDays,
     hourlyFee,
@@ -30,7 +30,7 @@ const TutorCard = ({ tutor }) => {
       <div className="relative w-full h-64">
         <Image
           src={
-            photoURL ||
+            image ||
             "https://via.placeholder.com/400x300.png?text=No+Image"
           }
           alt={tutorName || "Tutor"}

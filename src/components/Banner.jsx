@@ -1,5 +1,6 @@
 
 "use client";
+import Link from "next/link";
 
 import { useState, useEffect } from "react";
 
@@ -58,15 +59,16 @@ className="w-full h-full object-cover"
 </h1>
 <p className="text-lg md:text-xl mb-6">{slide.desc}</p>
 
-<button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition">
+{/* <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition">
 Explore Tutors
-</button>
+</button> */}
 
-  {/* <Link href="/alltutors">
-        <Button className="bg-cyan-500 text-white">
-          Explore tutors
-        </Button>
-      </Link> */}
+<Link href="/all-tutors">
+  <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition">
+    Explore Tutors
+  </button>
+</Link>
+
 </div>
 </div>
 </div>

@@ -3,6 +3,10 @@ import WhyChooseUs from "@/components/Home/WhyChooseUs";
 import HowItWorks from "@/components/Home/HowItWorks";
 import AllTutorPage from "@/components/Home/AllTutors";
 
+export const metadata = {
+  title: "Home | Tutor Finder",
+};
+
 
 export default function Home() {
   return (
